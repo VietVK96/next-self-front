@@ -18,33 +18,34 @@ import GitHubButton from "react-github-btn";
 
 // @mui material components
 import Divider from "@mui/material/Divider";
-import Switch from "@mui/material/Switch";
-import IconButton from "@mui/material/IconButton";
-import Link from "@mui/material/Link";
 import Icon from "@mui/material/Icon";
+import IconButton from "@mui/material/IconButton";
+import Switch from "@mui/material/Switch";
 
 // @mui icons
-import TwitterIcon from "@mui/icons-material/Twitter";
-import FacebookIcon from "@mui/icons-material/Facebook";
 
 // Argon Dashboard 2 MUI components
 import ArgonBox from "components/ArgonBox";
-import ArgonTypography from "components/ArgonTypography";
 import ArgonButton from "components/ArgonButton";
+import ArgonTypography from "components/ArgonTypography";
 
 // Custom styles for the Configurator
 import ConfiguratorRoot from "examples/Configurator/ConfiguratorRoot";
 
 // Argon Dashboard 2 MUI context
+import { Logout } from "@mui/icons-material";
 import {
-  useArgonController,
-  setOpenConfigurator,
-  setDarkSidenav,
-  setMiniSidenav,
-  setFixedNavbar,
-  setSidenavColor,
   setDarkMode,
+  setDarkSidenav,
+  setFixedNavbar,
+  setMiniSidenav,
+  setOpenConfigurator,
+  setSidenavColor,
+  useArgonController,
 } from "context";
+import { removeToken } from "service/ultil";
+import { removeUser } from "service/ultil";
+import { useNavigate } from "react-router-dom";
 
 function Configurator() {
   const [controller, dispatch] = useArgonController();
@@ -62,8 +63,18 @@ function Configurator() {
     setDarkMode(dispatch, !darkMode);
   };
 
+  const navigate = useNavigate();
+  const handleSignOut = () => {
+    removeToken();
+    removeUser();
+    navigate("/sign-in");
+  };
   return (
-    <ConfiguratorRoot sx={{display:"flex",flexDirection:"column",flex:1}} variant="permanent" ownerState={{ openConfigurator }}>
+    <ConfiguratorRoot
+      sx={{ display: "flex", flexDirection: "column", flex: 1 }}
+      variant="permanent"
+      ownerState={{ openConfigurator }}
+    >
       <ArgonBox
         display="flex"
         justifyContent="space-between"
@@ -97,7 +108,7 @@ function Configurator() {
 
       <Divider />
 
-      <ArgonBox pt={1.25} pb={3} px={3} sx={{display:"flex",flexDirection:"column",flex:1}}>
+      <ArgonBox pt={1.25} pb={3} px={3} sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
         <ArgonBox>
           <ArgonTypography variant="h6">Sidenav Colors</ArgonTypography>
 
@@ -187,10 +198,8 @@ function Configurator() {
           <Switch checked={darkMode} onChange={handleDarkMode} />
         </ArgonBox>
 
-        <ArgonBox mt={5} mb={2} sx={{flex:1}}>
-         
-        </ArgonBox>
-        <ArgonBox display="flex" justifyContent="center">
+        <ArgonBox mt={5} mb={2} sx={{ flex: 1 }}></ArgonBox>
+        {/* <ArgonBox display="flex" justifyContent="center">
           <GitHubButton
             href="https://github.com/creativetimofficial/argon-dashboard-material-ui"
             data-icon="octicon-star"
@@ -200,14 +209,21 @@ function Configurator() {
           >
             Star
           </GitHubButton>
-        </ArgonBox>
+        </ArgonBox> */}
         <ArgonBox mt={3} textAlign="center">
-          <ArgonBox mb={0.5}>
+          {/* <ArgonBox mb={0.5}>
             <ArgonTypography variant="h6">Thank you for sharing!</ArgonTypography>
-          </ArgonBox>
+          </ArgonBox> */}
 
-          <ArgonBox display="flex" justifyContent="center">
-            <ArgonBox mr={1.5}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              color: "#344767",
+            }}
+          >
+            {/* <ArgonBox mr={1.5}>
               <ArgonButton
                 component={Link}
                 href="//twitter.com/intent/tweet?text=Check%20Argon%20Dashboard%202%20PRO%20MUI%20made%20by%20%40CreativeTim%20%23webdesign%20%23dashboard%20%23react%20%mui&url=https%3A%2F%2Fwww.creative-tim.com%2Fproduct%2Fargon-dashboard-material-ui"
@@ -228,8 +244,12 @@ function Configurator() {
             >
               <FacebookIcon />
               &nbsp; Share
-            </ArgonButton>
-          </ArgonBox>
+            </ArgonButton> */}
+            Logout
+            <IconButton onClick={handleSignOut} title="Sign-out">
+              <Logout />
+            </IconButton>
+          </div>
         </ArgonBox>
       </ArgonBox>
     </ConfiguratorRoot>

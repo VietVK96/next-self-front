@@ -1,95 +1,53 @@
-import React, { useEffect } from "react";
 import {
+  Backdrop,
   Box,
-  Grid,
-  Typography,
-  Card,
-  CardContent,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
+  CircularProgress,
+  Typography
 } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
 import { request } from "service/base.service";
+import JsonViewer from "./JsonViewer";
+import { defaultError } from "layouts/personal-branch/data/profilesListData";
 
-const Final = () => {
+const Final = (props) => {
+  const [loading, setLoading] = useState();
+  const [data, setData] = useState({});
   useEffect(() => {
+    setLoading(true);
     request()
       .get("/personal-brand/final-result")
       .then((res) => {
-        console.log(res?.data);
+        setData(res?.data);
       })
       .catch((e) => {
-        console.log("---data---", e);
+        props?.setAlertInfo({
+          message: e?.response.data.msg ?? defaultError,
+          severity: "error",
+        });
+        props?.setOpen(true);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, []);
-  const data = [
-    {
-      phase: "Know",
-      group: "Reveal",
-      topics: [
-        "Meet the Expert Behind Vietnam’s Rise in Automotive Tech",
-        "From Vietnam to the World: Delivering Cost-Efficient Automotive Solutions",
-        "What Makes Vietnam a Global Hub for Embedded Systems Innovation?",
-        "The Journey of a Visionary: My Path in Automotive Embedded Systems",
-        "Breaking Down Automotive Challenges: How We Deliver Quality with Efficiency",
-      ],
-    },
-    {
-      phase: "Riddle",
-      group: "Reveal",
-      topics: [
-        "Guess What Drives the Future of Automotive Innovation?",
-        "Can You Solve This Embedded Systems Puzzle?",
-        "Which Region is Becoming a Cost-Efficiency Powerhouse in Automotive?",
-        "The One Tool Every Automotive Engineer Should Know: Can You Guess?",
-        "What Makes a Team Outperform Expectations? Hint: It’s Not Just Skill.",
-      ],
-    },
-    // Add more phases as needed
-  ];
 
   return (
     <Box sx={{ padding: "20px" }}>
-      <Typography variant="h4" gutterBottom>
-        Content Phases and Suggested Topics
-      </Typography>
-      <Grid container spacing={3}>
-        {data.map((phase, index) => (
-          <Grid item xs={12} md={6} key={index}>
-            <Card elevation={3}>
-              <CardContent>
-                <Typography variant="h5" gutterBottom>
-                  Phase: {phase.phase}
-                </Typography>
-                <Typography variant="subtitle1" color="text.secondary">
-                  Content Group: {phase.group}
-                </Typography>
-                <Box mt={2}>
-                  {phase.topics.map((topic, idx) => (
-                    <Accordion key={idx}>
-                      <AccordionSummary
-                        expandIcon={<ExpandMoreIcon />}
-                        aria-controls={`panel${index}-content`}
-                        id={`panel${index}-header`}
-                      >
-                        <Typography>{topic}</Typography>
-                      </AccordionSummary>
-                      <AccordionDetails>
-                        <Typography variant="body2" color="text.secondary">
-                          This is a detailed explanation or rationale for the topic.
-                        </Typography>
-                      </AccordionDetails>
-                    </Accordion>
-                  ))}
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+      <Box>
+        <Typography variant="h4" gutterBottom>
+          Content Phases and Suggested Topics
+        </Typography>
+          <JsonViewer data={data?.['personal_branding_strategy'] ?? data?.['PersonalBrandingStrategy'] ?? data?.['PersonalBrandingPlan']  ?? {}}/>
+      </Box>
+      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Box>
   );
 };
-
+Final.propTypes = {
+  setAlertInfo: PropTypes.func,
+  setOpen: PropTypes.func,
+};
 export default Final;

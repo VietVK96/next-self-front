@@ -72,3 +72,5 @@ const profilesListData = [
 ];
 
 export default profilesListData;
+
+export const defaultError = "The system is overloaded, please try again in a few minutes!"

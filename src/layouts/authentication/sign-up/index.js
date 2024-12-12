@@ -14,7 +14,7 @@ Coded by www.creative-tim.com
 */
 
 // react-router-dom components
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // @mui material components
 import Card from "@mui/material/Card";
@@ -30,7 +30,8 @@ import ArgonButton from "components/ArgonButton";
 import CoverLayout from "layouts/authentication/components/CoverLayout";
 import Socials from "layouts/authentication/components/Socials";
 import Separator from "layouts/authentication/components/Separator";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { request } from "service/base.service";
 
 // Images
 const bgImage =
@@ -38,8 +39,24 @@ const bgImage =
 
 function Cover() {
   const [payload, setPayload] = useState({});
-  const handleChange = (value) => setPayload((pre) => ({ ...pre, value }));
+  const handleChange = (value) => setPayload((pre) => ({ ...pre, ...value }));
+  const [error, setErorr] = useState(false);
 
+  const disableSignup = useMemo(() => {
+    return !payload.name || !payload.email || !payload.password;
+  }, [payload]);
+
+  const navigate = useNavigate();
+  const handleSubmit = () => {
+    setErorr(false);
+    request()
+      .post(`/auth/register`, payload)
+      .then(() => {
+        navigate("/sign-in");
+      })
+      .catch(() => setErorr(true));
+  };
+  
   return (
     <CoverLayout
       title="Welcome!"
@@ -69,6 +86,7 @@ function Cover() {
                   handleChange({ name: e?.target?.value });
                 }}
               />
+              {error && <p style={{ fontSize: "12px", color: "red" }}>Email incorrect</p>}
             </ArgonBox>
             <ArgonBox mb={2}>
               <ArgonInput
@@ -108,7 +126,7 @@ function Cover() {
               </ArgonTypography>
             </ArgonBox>
             <ArgonBox mt={4} mb={1}>
-              <ArgonButton variant="gradient" color="dark" fullWidth disabled>
+              <ArgonButton variant="gradient" color="dark" fullWidth disabled={disableSignup} onClick={handleSubmit}>
                 sign up
               </ArgonButton>
             </ArgonBox>

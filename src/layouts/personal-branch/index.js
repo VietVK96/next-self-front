@@ -18,7 +18,7 @@ Coded by www.creative-tim.com
 // @mui icons
 
 // Argon Dashboard 2 MUI components
-import { Box, Step, StepLabel, Stepper } from "@mui/material";
+import { Alert, Box, Snackbar, Step, StepLabel, Stepper } from "@mui/material";
 import ArgonBox from "components/ArgonBox";
 
 // Argon Dashboard 2 MUI example components
@@ -38,9 +38,9 @@ import { request } from "service/base.service";
 const bgImage =
   "https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/profile-layout-header.jpg";
 const steps = [
-  "upload cv",
-  "answer 5 questions",
-  "Click the 'Generate' button to get your AI-powered personal branding statement.",
+  "Building a brand platform",
+  "Building a brand story",
+  "Explore your brand positioning strategy",
 ];
 
 function Overview() {
@@ -60,9 +60,16 @@ function Overview() {
       });
   }, [refreshTag]);
   useEffect(() => {
-    if (info) setActiveStep(info?.activeStep);
+    if (info) {
+      setActiveStep(info?.activeStep ?? 0);
+    }
   }, [info]);
 
+  const [open, setOpen] = useState(false);
+  const [alertInfo, setAlertInfo] = useState({
+    message: "",
+    severity: "success",
+  });
   const generateStep = () => {
     switch (activeStep) {
       case 0: {
@@ -74,6 +81,9 @@ function Overview() {
                 0: true,
               });
             }}
+            info={info}
+            setOpen={setOpen}
+            setAlertInfo={setAlertInfo}
           />
         );
       }
@@ -86,14 +96,23 @@ function Overview() {
                 1: true,
               });
             }}
-            info = {info}
+            info={info}
+            setOpen={setOpen}
+            setAlertInfo={setAlertInfo}
           />
         );
       }
       case 2: {
-        return <Final />;
+        return <Final setOpen={setOpen} setAlertInfo={setAlertInfo} />;
       }
     }
+  };
+
+  const handleClose = (_, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
   };
   return (
     <DashboardLayout
@@ -124,6 +143,16 @@ function Overview() {
         </Stepper>
         {generateStep()}
       </Box>
+      <Snackbar
+        open={open}
+        autoHideDuration={2000}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert onClose={handleClose} severity={alertInfo.severity} sx={{ width: "100%" }}>
+          {alertInfo.message}
+        </Alert>
+      </Snackbar>
     </DashboardLayout>
   );
 }

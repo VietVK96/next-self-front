@@ -2,14 +2,16 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { Box, Button, FormControl, FormLabel, styled } from "@mui/material";
 import ArgonBox from "components/ArgonBox";
 import ArgonInput from "components/ArgonInput";
+import { defaultError } from "layouts/personal-branch/data/profilesListData";
 import PropTypes from "prop-types";
 import { useMemo, useState } from "react";
 import { request } from "service/base.service";
 
 const Step1 = (props) => {
   const [form, setForm] = useState({
-    job: "",
-    brand: "",
+    technique: "",
+    title: "",
+    goals: "",
     file: null,
   });
 
@@ -23,42 +25,64 @@ const Step1 = (props) => {
   };
 
   const isEnableSubmit = useMemo(() => {
-    return !!form.file || (!!form.job && !!form.brand);
+    return !!form.file || (!!form.technique && !!form.title && !!form.goals);
   }, [form]);
 
   const submit = () => {
-    const { job, brand, file } = form;
+    const { technique, title, goals, file } = form;
     const formData = new FormData();
-    formData.append("file",file);
-    formData.append("job",job);
-    formData.append("branchName",brand);
+    formData.append("file", file);
+    formData.append("technique", technique);
+    formData.append("title", title);
+    formData.append("goals", goals);
 
-    request().post(`/personal-brand/upload`,formData,{headers: { "Content-Type": "multipart/form-data" }},)
-    .then(res=>{
-      props.onComplete && props?.onComplete(res?.data);
-    })
-    .catch(e=>console.log(e));
+    request()
+      .post(`/personal-brand/upload`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then((res) => {
+        props?.setAlertInfo({
+          message: "Building a brand platform successfully",
+          severity: "success",
+        });
+        props?.setOpen(true);
+        props.onComplete && props?.onComplete(res?.data);
+      })
+      .catch((e) => {
+        props?.setAlertInfo({
+          message: e?.response.data.msg ?? defaultError,
+          severity: "error",
+        });
+        props?.setOpen(true);
+      });
   };
+
   return (
     <Box sx={{ borderRadius: "5px", padding: "8px" }}>
       <div>
         <div>I. Submit your CV or a short description of your work experience.</div>
-        <Button
-          component="label"
-          role={undefined}
-          variant="contained"
-          tabIndex={-1}
-          startIcon={<CloudUploadIcon />}
-          sx={{ color: "#FFF", mt: "8px" }}
-        >
-          Upload CV
-          <VisuallyHiddenInput
-            type="file"
-            onChange={(event) => {
-              handleChangeForm({ file: event.target.files?.[0] });
-            }}
-          />
-        </Button>
+        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+          <Button
+            component="label"
+            role={undefined}
+            variant="contained"
+            tabIndex={-1}
+            startIcon={<CloudUploadIcon />}
+            sx={{ color: "#FFF", mt: "8px" }}
+          >
+            Upload CV
+            <VisuallyHiddenInput
+              type="file"
+              onChange={(event) => {
+                handleChangeForm({ file: event.target.files?.[0] });
+              }}
+              accept=".pdf, .doc, .docx"
+            />
+          </Button>
+          <div style={{ display: "flex", gap: "8px", alignItems: "center", fontSize: "12px" }}>
+            {form?.file?.name ?? props?.info?.originalname}
+          </div>
+        </div>
       </div>
       <div>
         <div>
@@ -69,7 +93,9 @@ const Step1 = (props) => {
         </div>
         <div>
           <FormControl sx={{ mt: "8px", width: "100%" }}>
-            <FormLabel sx={{ fontSize: "16px" }}>What field are you working in?</FormLabel>
+            <FormLabel sx={{ fontSize: "16px" }}>
+              What is your area of expertise? (Example: Automotive testing)
+            </FormLabel>
             <ArgonBox mb={2}>
               <ArgonInput
                 sx={{ minWidth: "300px" }}
@@ -78,6 +104,22 @@ const Step1 = (props) => {
                 size="medium"
                 onChange={(e) => {
                   handleChangeForm({ job: e?.target?.value });
+                }}
+              />
+            </ArgonBox>
+          </FormControl>
+          <FormControl sx={{ mt: "8px", width: "100%" }}>
+            <FormLabel sx={{ fontSize: "16px" }}>
+              What is your current title? (Example: Automotive testing leader)
+            </FormLabel>
+            <ArgonBox mb={2}>
+              <ArgonInput
+                sx={{ minWidth: "300px" }}
+                type="text"
+                placeholder="..."
+                size="medium"
+                onChange={(e) => {
+                  handleChangeForm({ branchName: e?.target?.value });
                 }}
               />
             </ArgonBox>
@@ -106,6 +148,7 @@ const Step1 = (props) => {
             variant="contained"
             onClick={() => submit()}
             disabled={!isEnableSubmit}
+            loading={true}
           >
             Submit
           </Button>
@@ -117,6 +160,9 @@ const Step1 = (props) => {
 
 Step1.propTypes = {
   onComplete: PropTypes.func, // Validates that `onComplete` is a function
+  info: PropTypes.object,
+  setAlertInfo: PropTypes.func,
+  setOpen: PropTypes.func,
 };
 export default Step1;
 
