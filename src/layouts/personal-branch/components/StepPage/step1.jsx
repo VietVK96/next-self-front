@@ -3,10 +3,41 @@ import { Box, Button, FormControl, FormLabel, styled } from "@mui/material";
 import ArgonBox from "components/ArgonBox";
 import ArgonInput from "components/ArgonInput";
 import PropTypes from "prop-types";
+import { useMemo, useState } from "react";
+import { request } from "service/base.service";
 
 const Step1 = (props) => {
-  const complete = () => {
-    props.onComplete && props?.onComplete();
+  const [form, setForm] = useState({
+    job: "",
+    brand: "",
+    file: null,
+  });
+
+  const handleChangeForm = (value) => {
+    setForm((pre) => {
+      return {
+        ...pre,
+        ...value,
+      };
+    });
+  };
+
+  const isEnableSubmit = useMemo(() => {
+    return !!form.file || (!!form.job && !!form.brand);
+  }, [form]);
+
+  const submit = () => {
+    const { job, brand, file } = form;
+    const formData = new FormData();
+    formData.append("file",file);
+    formData.append("job",job);
+    formData.append("branchName",brand);
+
+    request().post(`/personal-brand/upload`,formData,{headers: { "Content-Type": "multipart/form-data" }},)
+    .then(res=>{
+      props.onComplete && props?.onComplete(res?.data);
+    })
+    .catch(e=>console.log(e));
   };
   return (
     <Box sx={{ borderRadius: "5px", padding: "8px" }}>
@@ -24,9 +55,8 @@ const Step1 = (props) => {
           <VisuallyHiddenInput
             type="file"
             onChange={(event) => {
-              console.log(event.target.files);
+              handleChangeForm({ file: event.target.files?.[0] });
             }}
-            multiple
           />
         </Button>
       </div>
@@ -41,7 +71,15 @@ const Step1 = (props) => {
           <FormControl sx={{ mt: "8px", width: "100%" }}>
             <FormLabel sx={{ fontSize: "16px" }}>What field are you working in?</FormLabel>
             <ArgonBox mb={2}>
-              <ArgonInput sx={{ minWidth: "300px" }} type="text" placeholder="..." size="medium" />
+              <ArgonInput
+                sx={{ minWidth: "300px" }}
+                type="text"
+                placeholder="..."
+                size="medium"
+                onChange={(e) => {
+                  handleChangeForm({ job: e?.target?.value });
+                }}
+              />
             </ArgonBox>
           </FormControl>
           <FormControl sx={{ mt: "8px", width: "100%" }}>
@@ -50,7 +88,15 @@ const Step1 = (props) => {
               make an impact, etc.)?
             </FormLabel>
             <ArgonBox mb={2}>
-              <ArgonInput sx={{ minWidth: "300px" }} type="text" placeholder="..." size="medium" />
+              <ArgonInput
+                sx={{ minWidth: "300px" }}
+                type="text"
+                placeholder="..."
+                size="medium"
+                onChange={(e) => {
+                  handleChangeForm({ branchName: e?.target?.value });
+                }}
+              />
             </ArgonBox>
           </FormControl>
         </div>
@@ -58,7 +104,8 @@ const Step1 = (props) => {
           <Button
             sx={{ color: "#FFF", mt: "8px" }}
             variant="contained"
-            onClick={() => complete()}
+            onClick={() => submit()}
+            disabled={!isEnableSubmit}
           >
             Submit
           </Button>

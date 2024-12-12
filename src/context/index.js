@@ -3,6 +3,7 @@ import { createContext, useContext, useReducer, useMemo } from "react";
 
 // prop-types is a library for typechecking of props
 import PropTypes from "prop-types";
+import { getUser } from "service/ultil";
 
 // The Argon Dashboard 2 MUI main context
 const Argon = createContext(null);
@@ -40,6 +41,9 @@ function reducer(state, action) {
     case "DARK_MODE": {
       return { ...state, darkMode: action.value };
     }
+    case "USER": {
+      return { ...state, user: action.value };
+    }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);
     }
@@ -58,6 +62,7 @@ function ArgonControllerProvider({ children }) {
     direction: "ltr",
     layout: "dashboard",
     darkMode: false,
+    user:getUser()
   };
 
   const [controller, dispatch] = useReducer(reducer, initialState);
@@ -93,6 +98,7 @@ const setOpenConfigurator = (dispatch, value) => dispatch({ type: "OPEN_CONFIGUR
 const setDirection = (dispatch, value) => dispatch({ type: "DIRECTION", value });
 const setLayout = (dispatch, value) => dispatch({ type: "LAYOUT", value });
 const setDarkMode = (dispatch, value) => dispatch({ type: "DARK_MODE", value });
+const setUserLogin = (dispatch, value) => dispatch({ type: "USER", value });
 
 export {
   ArgonControllerProvider,
@@ -106,4 +112,5 @@ export {
   setDirection,
   setLayout,
   setDarkMode,
+  setUserLogin
 };

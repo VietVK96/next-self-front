@@ -3,10 +3,49 @@ import { Button, FormControl, FormLabel } from "@mui/material";
 import ArgonBox from "components/ArgonBox";
 import ArgonInput from "components/ArgonInput";
 import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
+import { request } from "service/base.service";
+
+const Keys = {
+  key1: "What excites you most about working in this field?",
+  key2: "What do you want to achieve in the next 5–10 years (work, career, personal)?",
+  key3: "What principles or values ​​do you base your work on?",
+  key4: "How do you define “success” at work?",
+  key5: "Who do you want to serve or influence (businesses, individuals, specific industries)?",
+  key6: "What problems do you want to solve for them?",
+  key7: "What format do you prefer to share your knowledge in (written, spoken, tutorial)?",
+  key8: "Do you want to reach a broad audience or focus on a small, high-value group?",
+};
 const Step2 = (props) => {
-  const complete = () => {
-    props.onComplete && props?.onComplete();
+  const [questions, setQuestions] = useState({});
+  const handleChange = (value) => {
+    setQuestions((pre) => {
+      return {
+        ...pre,
+        ...value,
+      };
+    });
   };
+  const onSubmit = () => {
+    request()
+      .post("personal-brand", { questions: JSON.stringify(questions) })
+      .then((res) => {
+        props.onComplete && props?.onComplete(res?.data);
+      })
+      .catch((e) => {
+        console.log("---data---", e);
+      });
+  };
+
+  useEffect(() => {
+    if (props?.info?.questions) {
+      if (typeof props?.info?.questions === "string") {
+        setQuestions(JSON.parse(props?.info?.questions));
+      } else {
+        setQuestions(props?.info?.questions);
+      }
+    }
+  }, [props?.info]);
   return (
     <Box>
       <div>To build the right personal branding strategy, I need more information from you:</div>
@@ -16,9 +55,7 @@ const Step2 = (props) => {
         </div>
         <div>
           <FormControl sx={{ mt: "8px", width: "100%" }}>
-            <FormLabel sx={{ fontSize: "16px" }}>
-              What excites you most about working in this field?
-            </FormLabel>
+            <FormLabel sx={{ fontSize: "16px" }}>{Keys.key1}</FormLabel>
             <ArgonBox mb={2}>
               <ArgonInput
                 sx={{ minWidth: "300px" }}
@@ -27,13 +64,17 @@ const Step2 = (props) => {
                 size="medium"
                 multiline
                 minRows={3}
+                value={questions[Keys.key1]}
+                onChange={(e) => {
+                  handleChange({
+                    [Keys.key1]: e?.target?.value,
+                  });
+                }}
               />
             </ArgonBox>
           </FormControl>
           <FormControl sx={{ mt: "8px", width: "100%" }}>
-            <FormLabel sx={{ fontSize: "16px" }}>
-              What do you want to achieve in the next 5–10 years (work, career, personal)?
-            </FormLabel>
+            <FormLabel sx={{ fontSize: "16px" }}>{Keys.key2}</FormLabel>
             <ArgonBox mb={2}>
               <ArgonInput
                 sx={{ minWidth: "300px" }}
@@ -42,6 +83,12 @@ const Step2 = (props) => {
                 size="medium"
                 multiline
                 minRows={3}
+                value={questions[Keys.key2]}
+                onChange={(e) => {
+                  handleChange({
+                    [Keys.key2]: e?.target?.value,
+                  });
+                }}
               />
             </ArgonBox>
           </FormControl>
@@ -53,9 +100,7 @@ const Step2 = (props) => {
         </div>
         <div>
           <FormControl sx={{ mt: "8px", width: "100%" }}>
-            <FormLabel sx={{ fontSize: "16px" }}>
-              What principles or values ​​do you base your work on?
-            </FormLabel>
+            <FormLabel sx={{ fontSize: "16px" }}>{Keys.key3}</FormLabel>
             <ArgonBox mb={2}>
               <ArgonInput
                 sx={{ minWidth: "300px" }}
@@ -64,11 +109,17 @@ const Step2 = (props) => {
                 size="medium"
                 multiline
                 minRows={3}
+                value={questions[Keys.key3]}
+                onChange={(e) => {
+                  handleChange({
+                    [Keys.key3]: e?.target?.value,
+                  });
+                }}
               />
             </ArgonBox>
           </FormControl>
           <FormControl sx={{ mt: "8px", width: "100%" }}>
-            <FormLabel sx={{ fontSize: "16px" }}>How do you define “success” at work?</FormLabel>
+            <FormLabel sx={{ fontSize: "16px" }}>{Keys.key4}</FormLabel>
             <ArgonBox mb={2}>
               <ArgonInput
                 sx={{ minWidth: "300px" }}
@@ -77,6 +128,12 @@ const Step2 = (props) => {
                 size="medium"
                 multiline
                 minRows={3}
+                value={questions[Keys.key4]}
+                onChange={(e) => {
+                  handleChange({
+                    [Keys.key4]: e?.target?.value,
+                  });
+                }}
               />
             </ArgonBox>
           </FormControl>
@@ -88,9 +145,7 @@ const Step2 = (props) => {
         </div>
         <div>
           <FormControl sx={{ mt: "8px", width: "100%" }}>
-            <FormLabel sx={{ fontSize: "16px" }}>
-              Who do you want to serve or influence (businesses, individuals, specific industries)?
-            </FormLabel>
+            <FormLabel sx={{ fontSize: "16px" }}>{Keys.key5}</FormLabel>
             <ArgonBox mb={2}>
               <ArgonInput
                 sx={{ minWidth: "300px" }}
@@ -99,13 +154,17 @@ const Step2 = (props) => {
                 size="medium"
                 multiline
                 minRows={3}
+                value={questions[Keys.key5]}
+                onChange={(e) => {
+                  handleChange({
+                    [Keys.key5]: e?.target?.value,
+                  });
+                }}
               />
             </ArgonBox>
           </FormControl>
           <FormControl sx={{ mt: "8px", width: "100%" }}>
-            <FormLabel sx={{ fontSize: "16px" }}>
-              What problems do you want to solve for them?
-            </FormLabel>
+            <FormLabel sx={{ fontSize: "16px" }}>{Keys.key6}</FormLabel>
             <ArgonBox mb={2}>
               <ArgonInput
                 sx={{ minWidth: "300px" }}
@@ -114,6 +173,12 @@ const Step2 = (props) => {
                 size="medium"
                 multiline
                 minRows={3}
+                value={questions[Keys.key6]}
+                onChange={(e) => {
+                  handleChange({
+                    [Keys.key6]: e?.target?.value,
+                  });
+                }}
               />
             </ArgonBox>
           </FormControl>
@@ -125,9 +190,7 @@ const Step2 = (props) => {
         </div>
         <div>
           <FormControl sx={{ mt: "8px", width: "100%" }}>
-            <FormLabel sx={{ fontSize: "16px" }}>
-              What format do you prefer to share your knowledge in (written, spoken, tutorial)?
-            </FormLabel>
+            <FormLabel sx={{ fontSize: "16px" }}>{Keys.key5}</FormLabel>
             <ArgonBox mb={2}>
               <ArgonInput
                 sx={{ minWidth: "300px" }}
@@ -136,13 +199,17 @@ const Step2 = (props) => {
                 size="medium"
                 multiline
                 minRows={3}
+                value={questions[Keys.key7]}
+                onChange={(e) => {
+                  handleChange({
+                    [Keys.key7]: e?.target?.value,
+                  });
+                }}
               />
             </ArgonBox>
           </FormControl>
           <FormControl sx={{ mt: "8px", width: "100%" }}>
-            <FormLabel sx={{ fontSize: "16px" }}>
-              Do you want to reach a broad audience or focus on a small, high-value group?
-            </FormLabel>
+            <FormLabel sx={{ fontSize: "16px" }}>{Keys.key6}</FormLabel>
             <ArgonBox mb={2}>
               <ArgonInput
                 sx={{ minWidth: "300px" }}
@@ -151,13 +218,19 @@ const Step2 = (props) => {
                 size="medium"
                 multiline
                 minRows={3}
+                value={questions[Keys.key8]}
+                onChange={(e) => {
+                  handleChange({
+                    [Keys.key8]: e?.target?.value,
+                  });
+                }}
               />
             </ArgonBox>
           </FormControl>
         </div>
       </div>
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        <Button sx={{ color: "#FFF", mt: "8px" }} variant="contained" onClick={() => complete()}>
+        <Button sx={{ color: "#FFF", mt: "8px" }} variant="contained" onClick={() => onSubmit()}>
           Generate
         </Button>
       </div>
@@ -165,6 +238,7 @@ const Step2 = (props) => {
   );
 };
 Step2.propTypes = {
-  onComplete: PropTypes.func, // Validates that `onComplete` is a function
+  onComplete: PropTypes.func,
+  info: PropTypes.object,
 };
 export default Step2;

@@ -1,8 +1,28 @@
-import React from "react";
-import { Box, Grid, Typography, Card, CardContent, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
+import React, { useEffect } from "react";
+import {
+  Box,
+  Grid,
+  Typography,
+  Card,
+  CardContent,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+} from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { request } from "service/base.service";
 
 const Final = () => {
+  useEffect(() => {
+    request()
+      .get("/personal-brand/final-result")
+      .then((res) => {
+        console.log(res?.data);
+      })
+      .catch((e) => {
+        console.log("---data---", e);
+      });
+  }, []);
   const data = [
     {
       phase: "Know",

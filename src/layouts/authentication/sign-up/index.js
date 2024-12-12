@@ -30,12 +30,16 @@ import ArgonButton from "components/ArgonButton";
 import CoverLayout from "layouts/authentication/components/CoverLayout";
 import Socials from "layouts/authentication/components/Socials";
 import Separator from "layouts/authentication/components/Separator";
+import { useState } from "react";
 
 // Images
 const bgImage =
   "https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/signup-cover.jpg";
 
 function Cover() {
+  const [payload, setPayload] = useState({});
+  const handleChange = (value) => setPayload((pre) => ({ ...pre, value }));
+
   return (
     <CoverLayout
       title="Welcome!"
@@ -59,13 +63,30 @@ function Cover() {
         <ArgonBox pt={2} pb={3} px={3}>
           <ArgonBox component="form" role="form">
             <ArgonBox mb={2}>
-              <ArgonInput placeholder="Name" />
+              <ArgonInput
+                placeholder="Name"
+                onChange={(e) => {
+                  handleChange({ name: e?.target?.value });
+                }}
+              />
             </ArgonBox>
             <ArgonBox mb={2}>
-              <ArgonInput type="email" placeholder="Email" />
+              <ArgonInput
+                type="email"
+                placeholder="Email"
+                onChange={(e) => {
+                  handleChange({ email: e?.target?.value });
+                }}
+              />
             </ArgonBox>
             <ArgonBox mb={2}>
-              <ArgonInput type="password" placeholder="Password" />
+              <ArgonInput
+                type="password"
+                placeholder="Password"
+                onChange={(e) => {
+                  handleChange({ password: e?.target?.value });
+                }}
+              />
             </ArgonBox>
             <ArgonBox display="flex" alignItems="center">
               <Checkbox defaultChecked />
@@ -87,7 +108,7 @@ function Cover() {
               </ArgonTypography>
             </ArgonBox>
             <ArgonBox mt={4} mb={1}>
-              <ArgonButton variant="gradient" color="dark" fullWidth>
+              <ArgonButton variant="gradient" color="dark" fullWidth disabled>
                 sign up
               </ArgonButton>
             </ArgonBox>
@@ -96,7 +117,7 @@ function Cover() {
                 Already have an account?&nbsp;
                 <ArgonTypography
                   component={Link}
-                  to="/authentication/sign-in"
+                  to="/sign-in"
                   variant="button"
                   color="dark"
                   fontWeight="bold"

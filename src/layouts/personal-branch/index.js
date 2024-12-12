@@ -26,10 +26,11 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 
 // Overview page components
 import Header from "layouts/personal-branch/components/Header";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Step1 from "./components/StepPage/step1";
 import Step2 from "./components/StepPage/step2";
 import Final from "./components/StepPage/final";
+import { request } from "service/base.service";
 
 // Data
 
@@ -45,14 +46,30 @@ const steps = [
 function Overview() {
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = React.useState({});
+  const [refreshTag, setRefreshTag] = useState(false);
+  const handleRefresh = () => setRefreshTag((pre) => !pre);
+  const [info, setInfo] = useState({});
+  useEffect(() => {
+    request()
+      .get("personal-brand")
+      .then((res) => {
+        setInfo(res?.data);
+      })
+      .catch((e) => {
+        console.log("---data---", e);
+      });
+  }, [refreshTag]);
+  useEffect(() => {
+    if (info) setActiveStep(info?.activeStep);
+  }, [info]);
 
   const generateStep = () => {
     switch (activeStep) {
       case 0: {
         return (
           <Step1
-            onComplete={() => {
-              setActiveStep(1);
+            onComplete={(value) => {
+              setInfo(value);
               setCompleted({
                 0: true,
               });
@@ -63,12 +80,13 @@ function Overview() {
       case 1: {
         return (
           <Step2
-            onComplete={() => {
-              setActiveStep(2);
+            onComplete={(value) => {
+              setInfo(value);
               setCompleted({
                 1: true,
               });
             }}
+            info = {info}
           />
         );
       }

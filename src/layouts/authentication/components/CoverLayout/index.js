@@ -24,7 +24,6 @@ import ArgonBox from "components/ArgonBox";
 import ArgonTypography from "components/ArgonTypography";
 
 // Argon Dashboard 2 MUI example components
-import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import PageLayout from "examples/LayoutContainers/PageLayout";
 
 // Authentication layout components
@@ -34,16 +33,6 @@ function CoverLayout({ title, description, image, imgPosition, button, children 
   return (
     <PageLayout>
       <ArgonBox mt={1}>
-        <DefaultNavbar
-          action={{
-            type: "external",
-            route: "https://creative-tim.com/product/argon-dashboard-material-ui",
-            label: "Free Download",
-            ...button,
-          }}
-          transparent
-          light
-        />
       </ArgonBox>
       <ArgonBox
         width="calc(100% - 2rem)"

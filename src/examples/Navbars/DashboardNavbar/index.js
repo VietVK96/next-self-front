@@ -62,7 +62,7 @@ import logoSpotify from "assets/images/small-logos/logo-spotify.svg";
 function DashboardNavbar({ absolute, light, isMini }) {
   const [navbarType, setNavbarType] = useState();
   const [controller, dispatch] = useArgonController();
-  const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator } = controller;
+  const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator, user } = controller;
   const [openMenu, setOpenMenu] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
 
@@ -96,8 +96,6 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
   const handleOpenMenu = (event) => setOpenMenu(event.currentTarget);
   const handleCloseMenu = () => setOpenMenu(false);
-
-
 
   // Render the notifications menu
   const renderMenu = () => (
@@ -172,24 +170,44 @@ function DashboardNavbar({ absolute, light, isMini }) {
               />
             </ArgonBox>
             <ArgonBox color={light ? "white" : "inherit"}>
-              <Link to="/sign-in">
-                <IconButton sx={navbarIconButton} size="small">
-                  <Icon
-                    sx={({ palette: { dark, white } }) => ({
-                      color: light && transparentNavbar ? white.main : dark.main,
-                    })}
-                  >
-                    account_circle
-                  </Icon>
-                  <ArgonTypography
-                    variant="button"
-                    fontWeight="medium"
-                    color={light && transparentNavbar ? "white" : "dark"}
-                  >
-                    Sign in
-                  </ArgonTypography>
-                </IconButton>
-              </Link>
+              {user ? (
+               <IconButton sx={navbarIconButton} size="small">
+               <Icon
+                 sx={({ palette: { dark, white } }) => ({
+                   color: light && transparentNavbar ? white.main : dark.main,
+                 })}
+               >
+                 account_circle
+               </Icon>
+               <ArgonTypography
+                 variant="button"
+                 fontWeight="medium"
+                 color={light && transparentNavbar ? "white" : "dark"}
+               >
+                {user?.name}
+               </ArgonTypography>
+             </IconButton>
+              ) : (
+                <Link to="/sign-in">
+                  <IconButton sx={navbarIconButton} size="small">
+                    <Icon
+                      sx={({ palette: { dark, white } }) => ({
+                        color: light && transparentNavbar ? white.main : dark.main,
+                      })}
+                    >
+                      account_circle
+                    </Icon>
+                    <ArgonTypography
+                      variant="button"
+                      fontWeight="medium"
+                      color={light && transparentNavbar ? "white" : "dark"}
+                    >
+                      Sign in
+                    </ArgonTypography>
+                  </IconButton>
+                </Link>
+              )}
+
               <IconButton
                 size="small"
                 color={light && transparentNavbar ? "white" : "dark"}
@@ -222,7 +240,6 @@ function DashboardNavbar({ absolute, light, isMini }) {
           </ArgonBox>
         )}
       </Toolbar>
-
     </AppBar>
   );
 }

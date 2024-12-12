@@ -16,10 +16,9 @@ Coded by www.creative-tim.com
 import { useState } from "react";
 
 // react-router-dom components
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // @mui material components
-import Switch from "@mui/material/Switch";
 
 // Argon Dashboard 2 MUI components
 import ArgonBox from "components/ArgonBox";
@@ -29,16 +28,36 @@ import ArgonButton from "components/ArgonButton";
 
 // Authentication layout components
 import IllustrationLayout from "layouts/authentication/components/IllustrationLayout";
+import { request } from "service/base.service";
+import { setToken } from "service/ultil";
+import { setUser } from "service/ultil";
+import { setUserLogin } from "context";
+import { useArgonController } from "context";
 
 // Image
 const bgImage =
   "https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/signin-ill.jpg";
 
 function Illustration() {
-  const [rememberMe, setRememberMe] = useState(false);
-
-  const handleSetRememberMe = () => setRememberMe(!rememberMe);
-
+  const [payload, setPayload] = useState({});
+  const [error, setErorr] = useState(false);
+  const handleChange = (value) => setPayload((pre) => ({ ...pre, ...value }));
+  const navigate = useNavigate();
+  const [controller, dispatch] = useArgonController();
+  const handleSubmit = () => {
+    setErorr(false);
+    request()
+      .post(`/auth/validation`, payload)
+      .then((res) => {
+        if (res?.data) {
+          setToken(res?.data?.token);
+          setUser(res?.data?.user);
+          setUserLogin(dispatch, res?.data?.user);
+          navigate("/dashboard");
+        }
+      })
+      .catch(() => setErorr(true));
+  };
   return (
     <IllustrationLayout
       title="Sign In"
@@ -52,24 +71,30 @@ function Illustration() {
     >
       <ArgonBox component="form" role="form">
         <ArgonBox mb={2}>
-          <ArgonInput type="email" placeholder="Email" size="large" />
+          <ArgonInput
+            type="email"
+            placeholder="Email"
+            size="large"
+            onChange={(e) => {
+              handleChange({ email: e?.target?.value });
+            }}
+            error={error}
+          />
+          {error && <p style={{ fontSize: "12px", color: "red" }}>Email or password incorrect</p>}
         </ArgonBox>
         <ArgonBox mb={2}>
-          <ArgonInput type="password" placeholder="Password" size="large" />
+          <ArgonInput
+            type="password"
+            placeholder="Password"
+            size="large"
+            onChange={(e) => {
+              handleChange({ password: e?.target?.value });
+            }}
+          />
         </ArgonBox>
-        <ArgonBox display="flex" alignItems="center">
-          <Switch checked={rememberMe} onChange={handleSetRememberMe} />
-          <ArgonTypography
-            variant="button"
-            fontWeight="regular"
-            onClick={handleSetRememberMe}
-            sx={{ cursor: "pointer", userSelect: "none" }}
-          >
-            &nbsp;&nbsp;Remember me
-          </ArgonTypography>
-        </ArgonBox>
+
         <ArgonBox mt={4} mb={1}>
-          <ArgonButton color="info" size="large" fullWidth>
+          <ArgonButton color="info" size="large" fullWidth onClick={handleSubmit}>
             Sign In
           </ArgonButton>
         </ArgonBox>
@@ -78,7 +103,7 @@ function Illustration() {
             Don&apos;t have an account?{" "}
             <ArgonTypography
               component={Link}
-              to="/authentication/sign-up"
+              to="/sign-up"
               variant="button"
               color="info"
               fontWeight="medium"
